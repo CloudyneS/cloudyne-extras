@@ -9,6 +9,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+class Cloudyne_Hooks {
+	public $settings;
+
+	public function __construct($settings)
+	{
+		$this->settings = $settings;
+		add_action('wp_head', array($this, 'tagManagerHook'));
+	}
+
+	public function tagManagerHook()
+	{
+		if (get_option($this->settings->base . 'googlead_code', '') != '') {
+			$googlead_code = get_option($this->settings->base . 'googlead_code', '');
+			echo $googlead_code;
+		}
+	}
+}
+
 /**
  * Main plugin class.
  */
@@ -102,6 +120,8 @@ class Cloudyne_Extras {
 	 */
 	public $script_suffix;
 
+	public $hooks;
+
 	/**
 	 * Constructor funtion.
 	 *
@@ -139,6 +159,11 @@ class Cloudyne_Extras {
 		$this->load_plugin_textdomain();
 		add_action( 'init', array( $this, 'load_localisation' ), 0 );
 	} // End __construct ()
+
+	public function add_hooks()
+	{
+		$this->hooks = new Cloudyne_Hooks($this->settings);
+	}
 
 	/**
 	 * Register post type function.

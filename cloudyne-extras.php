@@ -43,6 +43,8 @@ function cloudyne_extras() {
 		$instance->settings = Cloudyne_Extras_Settings::instance( $instance );
 	}
 
+	$instance->add_hooks();
+
 	return $instance;
 }
 

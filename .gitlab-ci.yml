@@ -1,0 +1,4 @@
+include:
+ - project: 'cicd-templates/composer'
+   ref: main
+   file: 'deploy-composer.yaml'

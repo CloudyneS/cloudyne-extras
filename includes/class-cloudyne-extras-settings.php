@@ -48,7 +48,9 @@ class Cloudyne_Extras_Settings {
 	 * @access  public
 	 * @since   1.0.0
 	 */
-	public $settings = array();
+	public $settings = array(
+		'googlead_code' => ''
+	);
 
 	/**
 	 * Constructor function.
@@ -58,7 +60,7 @@ class Cloudyne_Extras_Settings {
 	public function __construct( $parent ) {
 		$this->parent = $parent;
 
-		$this->base = 'wpt_';
+		$this->base = 'cldy_';
 
 		// Initialise settings.
 		add_action( 'init', array( $this, 'init_settings' ), 11 );
@@ -126,10 +128,9 @@ class Cloudyne_Extras_Settings {
 		return apply_filters(
 			$this->base . 'menu_settings',
 			array(
-				'location'    => 'options', // Possible settings: options, menu, submenu.
-				'parent_slug' => 'options-general.php',
-				'page_title'  => __( 'Plugin Settings', 'cloudyne-extras' ),
-				'menu_title'  => __( 'Plugin Settings', 'cloudyne-extras' ),
+				'location'    => 'menu',
+				'page_title'  => __( 'Cloudyne Settings', 'cloudyne-extras' ),
+				'menu_title'  => __( 'CLDY Settings', 'cloudyne-extras' ),
 				'capability'  => 'manage_options',
 				'menu_slug'   => $this->parent->_token . '_settings',
 				'function'    => array( $this, 'settings_page' ),
@@ -188,131 +189,146 @@ class Cloudyne_Extras_Settings {
 	 * @return array Fields to be displayed on settings page
 	 */
 	private function settings_fields() {
-
-		$settings['standard'] = array(
-			'title'       => __( 'Standard', 'cloudyne-extras' ),
-			'description' => __( 'These are fairly standard form input fields.', 'cloudyne-extras' ),
-			'fields'      => array(
+		$settings['googlead'] = array(
+			'title'	   => __( 'Google Ad Manager', 'cloudyne-extras' ),
+			'description' => __( 'Settings for Google ad manager', 'cloudyne-extras' ),
+			'fields' => array(
 				array(
-					'id'          => 'text_field',
-					'label'       => __( 'Some Text', 'cloudyne-extras' ),
-					'description' => __( 'This is a standard text field.', 'cloudyne-extras' ),
-					'type'        => 'text',
-					'default'     => '',
-					'placeholder' => __( 'Placeholder text', 'cloudyne-extras' ),
-				),
-				array(
-					'id'          => 'password_field',
-					'label'       => __( 'A Password', 'cloudyne-extras' ),
-					'description' => __( 'This is a standard password field.', 'cloudyne-extras' ),
-					'type'        => 'password',
-					'default'     => '',
-					'placeholder' => __( 'Placeholder text', 'cloudyne-extras' ),
-				),
-				array(
-					'id'          => 'secret_text_field',
-					'label'       => __( 'Some Secret Text', 'cloudyne-extras' ),
-					'description' => __( 'This is a secret text field - any data saved here will not be displayed after the page has reloaded, but it will be saved.', 'cloudyne-extras' ),
-					'type'        => 'text_secret',
-					'default'     => '',
-					'placeholder' => __( 'Placeholder text', 'cloudyne-extras' ),
-				),
-				array(
-					'id'          => 'text_block',
-					'label'       => __( 'A Text Block', 'cloudyne-extras' ),
-					'description' => __( 'This is a standard text area.', 'cloudyne-extras' ),
-					'type'        => 'textarea',
-					'default'     => '',
-					'placeholder' => __( 'Placeholder text for this textarea', 'cloudyne-extras' ),
-				),
-				array(
-					'id'          => 'single_checkbox',
-					'label'       => __( 'An Option', 'cloudyne-extras' ),
-					'description' => __( 'A standard checkbox - if you save this option as checked then it will store the option as \'on\', otherwise it will be an empty string.', 'cloudyne-extras' ),
-					'type'        => 'checkbox',
-					'default'     => '',
-				),
-				array(
-					'id'          => 'select_box',
-					'label'       => __( 'A Select Box', 'cloudyne-extras' ),
-					'description' => __( 'A standard select box.', 'cloudyne-extras' ),
-					'type'        => 'select',
-					'options'     => array(
-						'drupal'    => 'Drupal',
-						'joomla'    => 'Joomla',
-						'wordpress' => 'WordPress',
-					),
-					'default'     => 'wordpress',
-				),
-				array(
-					'id'          => 'radio_buttons',
-					'label'       => __( 'Some Options', 'cloudyne-extras' ),
-					'description' => __( 'A standard set of radio buttons.', 'cloudyne-extras' ),
-					'type'        => 'radio',
-					'options'     => array(
-						'superman' => 'Superman',
-						'batman'   => 'Batman',
-						'ironman'  => 'Iron Man',
-					),
-					'default'     => 'batman',
-				),
-				array(
-					'id'          => 'multiple_checkboxes',
-					'label'       => __( 'Some Items', 'cloudyne-extras' ),
-					'description' => __( 'You can select multiple items and they will be stored as an array.', 'cloudyne-extras' ),
-					'type'        => 'checkbox_multi',
-					'options'     => array(
-						'square'    => 'Square',
-						'circle'    => 'Circle',
-						'rectangle' => 'Rectangle',
-						'triangle'  => 'Triangle',
-					),
-					'default'     => array( 'circle', 'triangle' ),
-				),
-			),
+					'id' => 'googlead_code',
+					'label' => __( 'Google Ad Manager Code', 'cloudyne-extras' ),
+					'description' => __( 'Enter your google ad manager code', 'cloudyne-extras' ),
+					'type' => 'textarea',
+					'default' => '',
+					'placeholder' => __( '<!-- Google tag (gtag.js) -->'.PHP_EOL.'.........', 'cloudyne-extras' ),
+				)
+			)
 		);
 
-		$settings['extra'] = array(
-			'title'       => __( 'Extra', 'cloudyne-extras' ),
-			'description' => __( 'These are some extra input fields that maybe aren\'t as common as the others.', 'cloudyne-extras' ),
-			'fields'      => array(
-				array(
-					'id'          => 'number_field',
-					'label'       => __( 'A Number', 'cloudyne-extras' ),
-					'description' => __( 'This is a standard number field - if this field contains anything other than numbers then the form will not be submitted.', 'cloudyne-extras' ),
-					'type'        => 'number',
-					'default'     => '',
-					'placeholder' => __( '42', 'cloudyne-extras' ),
-				),
-				array(
-					'id'          => 'colour_picker',
-					'label'       => __( 'Pick a colour', 'cloudyne-extras' ),
-					'description' => __( 'This uses WordPress\' built-in colour picker - the option is stored as the colour\'s hex code.', 'cloudyne-extras' ),
-					'type'        => 'color',
-					'default'     => '#21759B',
-				),
-				array(
-					'id'          => 'an_image',
-					'label'       => __( 'An Image', 'cloudyne-extras' ),
-					'description' => __( 'This will upload an image to your media library and store the attachment ID in the option field. Once you have uploaded an imge the thumbnail will display above these buttons.', 'cloudyne-extras' ),
-					'type'        => 'image',
-					'default'     => '',
-					'placeholder' => '',
-				),
-				array(
-					'id'          => 'multi_select_box',
-					'label'       => __( 'A Multi-Select Box', 'cloudyne-extras' ),
-					'description' => __( 'A standard multi-select box - the saved data is stored as an array.', 'cloudyne-extras' ),
-					'type'        => 'select_multi',
-					'options'     => array(
-						'linux'   => 'Linux',
-						'mac'     => 'Mac',
-						'windows' => 'Windows',
-					),
-					'default'     => array( 'linux' ),
-				),
-			),
-		);
+
+		// $settings['standard'] = array(
+		// 	'title'       => __( 'Standard', 'cloudyne-extras' ),
+		// 	'description' => __( 'These are fairly standard form input fields.', 'cloudyne-extras' ),
+		// 	'fields'      => array(
+		// 		array(
+		// 			'id'          => 'text_field',
+		// 			'label'       => __( 'Some Text', 'cloudyne-extras' ),
+		// 			'description' => __( 'This is a standard text field.', 'cloudyne-extras' ),
+		// 			'type'        => 'text',
+		// 			'default'     => '',
+		// 			'placeholder' => __( 'Placeholder text', 'cloudyne-extras' ),
+		// 		),
+		// 		array(
+		// 			'id'          => 'password_field',
+		// 			'label'       => __( 'A Password', 'cloudyne-extras' ),
+		// 			'description' => __( 'This is a standard password field.', 'cloudyne-extras' ),
+		// 			'type'        => 'password',
+		// 			'default'     => '',
+		// 			'placeholder' => __( 'Placeholder text', 'cloudyne-extras' ),
+		// 		),
+		// 		array(
+		// 			'id'          => 'secret_text_field',
+		// 			'label'       => __( 'Some Secret Text', 'cloudyne-extras' ),
+		// 			'description' => __( 'This is a secret text field - any data saved here will not be displayed after the page has reloaded, but it will be saved.', 'cloudyne-extras' ),
+		// 			'type'        => 'text_secret',
+		// 			'default'     => '',
+		// 			'placeholder' => __( 'Placeholder text', 'cloudyne-extras' ),
+		// 		),
+		// 		array(
+		// 			'id'          => 'text_block',
+		// 			'label'       => __( 'A Text Block', 'cloudyne-extras' ),
+		// 			'description' => __( 'This is a standard text area.', 'cloudyne-extras' ),
+		// 			'type'        => 'textarea',
+		// 			'default'     => '',
+		// 			'placeholder' => __( 'Placeholder text for this textarea', 'cloudyne-extras' ),
+		// 		),
+		// 		array(
+		// 			'id'          => 'single_checkbox',
+		// 			'label'       => __( 'An Option', 'cloudyne-extras' ),
+		// 			'description' => __( 'A standard checkbox - if you save this option as checked then it will store the option as \'on\', otherwise it will be an empty string.', 'cloudyne-extras' ),
+		// 			'type'        => 'checkbox',
+		// 			'default'     => '',
+		// 		),
+		// 		array(
+		// 			'id'          => 'select_box',
+		// 			'label'       => __( 'A Select Box', 'cloudyne-extras' ),
+		// 			'description' => __( 'A standard select box.', 'cloudyne-extras' ),
+		// 			'type'        => 'select',
+		// 			'options'     => array(
+		// 				'drupal'    => 'Drupal',
+		// 				'joomla'    => 'Joomla',
+		// 				'wordpress' => 'WordPress',
+		// 			),
+		// 			'default'     => 'wordpress',
+		// 		),
+		// 		array(
+		// 			'id'          => 'radio_buttons',
+		// 			'label'       => __( 'Some Options', 'cloudyne-extras' ),
+		// 			'description' => __( 'A standard set of radio buttons.', 'cloudyne-extras' ),
+		// 			'type'        => 'radio',
+		// 			'options'     => array(
+		// 				'superman' => 'Superman',
+		// 				'batman'   => 'Batman',
+		// 				'ironman'  => 'Iron Man',
+		// 			),
+		// 			'default'     => 'batman',
+		// 		),
+		// 		array(
+		// 			'id'          => 'multiple_checkboxes',
+		// 			'label'       => __( 'Some Items', 'cloudyne-extras' ),
+		// 			'description' => __( 'You can select multiple items and they will be stored as an array.', 'cloudyne-extras' ),
+		// 			'type'        => 'checkbox_multi',
+		// 			'options'     => array(
+		// 				'square'    => 'Square',
+		// 				'circle'    => 'Circle',
+		// 				'rectangle' => 'Rectangle',
+		// 				'triangle'  => 'Triangle',
+		// 			),
+		// 			'default'     => array( 'circle', 'triangle' ),
+		// 		),
+		// 	),
+		// );
+
+		// $settings['extra'] = array(
+		// 	'title'       => __( 'Extra', 'cloudyne-extras' ),
+		// 	'description' => __( 'These are some extra input fields that maybe aren\'t as common as the others.', 'cloudyne-extras' ),
+		// 	'fields'      => array(
+		// 		array(
+		// 			'id'          => 'number_field',
+		// 			'label'       => __( 'A Number', 'cloudyne-extras' ),
+		// 			'description' => __( 'This is a standard number field - if this field contains anything other than numbers then the form will not be submitted.', 'cloudyne-extras' ),
+		// 			'type'        => 'number',
+		// 			'default'     => '',
+		// 			'placeholder' => __( '42', 'cloudyne-extras' ),
+		// 		),
+		// 		array(
+		// 			'id'          => 'colour_picker',
+		// 			'label'       => __( 'Pick a colour', 'cloudyne-extras' ),
+		// 			'description' => __( 'This uses WordPress\' built-in colour picker - the option is stored as the colour\'s hex code.', 'cloudyne-extras' ),
+		// 			'type'        => 'color',
+		// 			'default'     => '#21759B',
+		// 		),
+		// 		array(
+		// 			'id'          => 'an_image',
+		// 			'label'       => __( 'An Image', 'cloudyne-extras' ),
+		// 			'description' => __( 'This will upload an image to your media library and store the attachment ID in the option field. Once you have uploaded an imge the thumbnail will display above these buttons.', 'cloudyne-extras' ),
+		// 			'type'        => 'image',
+		// 			'default'     => '',
+		// 			'placeholder' => '',
+		// 		),
+		// 		array(
+		// 			'id'          => 'multi_select_box',
+		// 			'label'       => __( 'A Multi-Select Box', 'cloudyne-extras' ),
+		// 			'description' => __( 'A standard multi-select box - the saved data is stored as an array.', 'cloudyne-extras' ),
+		// 			'type'        => 'select_multi',
+		// 			'options'     => array(
+		// 				'linux'   => 'Linux',
+		// 				'mac'     => 'Mac',
+		// 				'windows' => 'Windows',
+		// 			),
+		// 			'default'     => array( 'linux' ),
+		// 		),
+		// 	),
+		// );
 
 		$settings = apply_filters( $this->parent->_token . '_settings_fields', $settings );
 
