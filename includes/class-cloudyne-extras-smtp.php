@@ -1,5 +1,5 @@
 <?php
-use function Env\Env;
+use function Env\env;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 /**
@@ -134,7 +134,8 @@ class Cloudyne_Extras_Smtp {
 	 * @return string
 	 */
 	public function get_env($key, $default = '') {
-		$envv = Env::get($key);
+        $envv = env($key);
+		// $envv = Env::get($key);
 		if ($envv !== null) {
 			return $envv;
 		}
