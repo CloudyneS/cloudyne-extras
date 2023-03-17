@@ -1,5 +1,6 @@
 <?php
-use function Env\Env;
+use function Env\env;
+
 /**
  * Settings class file.
  *
@@ -193,20 +194,20 @@ class Cloudyne_Extras_Settings {
 	private function settings_fields() {
 		$allowData = "";
 
-		if ((env::get('SMTP_ALLOWONLY_DOMAINS') || env::get('SMTP_ALLOWONLY_EMAILS')) && !env::get('SMTP_FORCE_FROM')) {
+		if ((env('SMTP_ALLOWONLY_DOMAINS') || env('SMTP_ALLOWONLY_EMAILS')) && !env('SMTP_FORCE_FROM')) {
 			$allowData = "<br/><br/><h3>Allowed sender domains/emails</h3><p>You can only configure emails to be sent from one of these domains or email addresses<ul>";
-			$allowedDomains = explode(",", env::get('SMTP_ALLOWONLY_DOMAINS'));
+			$allowedDomains = explode(",", env('SMTP_ALLOWONLY_DOMAINS'));
 			foreach ($allowedDomains as $domain) {
 				$allowData .= "<li>".$domain . "</li>";
 			}
-			$allowedSenders = explode(",", env::get('SMTP_ALLOWONLY_EMAILS'));
+			$allowedSenders = explode(",", env('SMTP_ALLOWONLY_EMAILS'));
 			foreach ($allowedSenders as $sender) {
 				$allowData .= "<li>".$sender . "</li>";
 			}
 			$allowData .= "</ul></p>";
-		} elseif (env::get('SMTP_FORCE_FROM')) {
+		} elseif (env('SMTP_FORCE_FROM')) {
 			$allowData = "<br/><br/><h3>Allowed sender domains/emails</h3><p>You cannot change the email sender since none of your domains are setup in our Email system.";
-			if (!env::get('SMTP_FORCE_FROM_NAME')) {
+			if (!env('SMTP_FORCE_FROM_NAME')) {
 				$allowData .= " You can still change the sender name though.";
 			}
 			$allowData .= "</ul></p>";
@@ -228,8 +229,8 @@ class Cloudyne_Extras_Settings {
 					'label' => __( 'Email Sender', 'cloudyne-extras'),
 					'description' => __( 'Enter the email address you want to send from', 'cloudyne-extras'),
 					'type' => 'text',
-					'default' => env::get('SMTP_FORCE_FROM') ?? env::get('SMTP_FROM') ?? '',
-					'disabled' => env::get('SMTP_FORCE_FROM') ? true : false,
+					'default' => env('SMTP_FORCE_FROM') ?? env('SMTP_FROM') ?? '',
+					'disabled' => env('SMTP_FORCE_FROM') ? true : false,
 					'placeholder' => __( 'Email address', 'cloudyne-extras'),
 				),
 				array(
@@ -237,8 +238,8 @@ class Cloudyne_Extras_Settings {
 					'label' => __( 'Email From Name', 'cloudyne-extras'),
 					'description' => __( 'Enter the name you want to send from', 'cloudyne-extras'),
 					'type' => 'text',
-					'default' => env::get('SMTP_FORCE_FROM_NAME') ?? env::get('SMTP_FROM_NAME') ?? '',
-					'disabled' => env::get('SMTP_FORCE_FROM_NAME') ? true : false,
+					'default' => env('SMTP_FORCE_FROM_NAME') ?? env('SMTP_FROM_NAME') ?? '',
+					'disabled' => env('SMTP_FORCE_FROM_NAME') ? true : false,
 					'placeholder' => __( 'Sender Name', 'cloudyne-extras'),
 				)
 			)
