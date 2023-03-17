@@ -1,4 +1,6 @@
 <?php
+use function Env\env;
+
 /**
  * Main plugin class file.
  *
@@ -15,6 +17,8 @@ class Cloudyne_Hooks {
 	public function __construct($settings)
 	{
 		$this->settings = $settings;
+
+		// Add action for Google Tag Manager
 		add_action('wp_head', array($this, 'tagManagerHook'));
 	}
 
@@ -154,6 +158,9 @@ class Cloudyne_Extras {
 		if ( is_admin() ) {
 			$this->admin = new Cloudyne_Extras_Admin_API();
 		}
+
+		// Load SMTP plugin
+		$smtp = new Cloudyne_Extras_SMTP();
 
 		// Handle localisation.
 		$this->load_plugin_textdomain();

@@ -23,6 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // Load plugin class files.
 require_once 'includes/class-cloudyne-extras.php';
+require_once 'includes/class-cloudyne-extras-smtp.php';
 require_once 'includes/class-cloudyne-extras-settings.php';
 
 // Load plugin libraries.

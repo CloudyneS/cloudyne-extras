@@ -1,4 +1,5 @@
 <?php
+use function Env\Env;
 /**
  * Settings class file.
  *
@@ -49,7 +50,7 @@ class Cloudyne_Extras_Settings {
 	 * @since   1.0.0
 	 */
 	public $settings = array(
-		'googlead_code' => ''
+		'googlead_code' => '',
 	);
 
 	/**
@@ -83,6 +84,7 @@ class Cloudyne_Extras_Settings {
 		// Configure placement of plugin settings page. See readme for implementation.
 		add_filter( $this->base . 'menu_settings', array( $this, 'configure_settings' ) );
 	}
+
 
 	/**
 	 * Initialise settings
@@ -189,20 +191,77 @@ class Cloudyne_Extras_Settings {
 	 * @return array Fields to be displayed on settings page
 	 */
 	private function settings_fields() {
+		$allowData = "";
+
+		if ((env::get('SMTP_ALLOWONLY_DOMAINS') || env::get('SMTP_ALLOWONLY_EMAILS')) && !env::get('SMTP_FORCE_FROM')) {
+			$allowData = "<br/><br/><h3>Allowed sender domains/emails</h3><p>You can only configure emails to be sent from one of these domains or email addresses<ul>";
+			$allowedDomains = explode(",", env::get('SMTP_ALLOWONLY_DOMAINS'));
+			foreach ($allowedDomains as $domain) {
+				$allowData .= "<li>".$domain . "</li>";
+			}
+			$allowedSenders = explode(",", env::get('SMTP_ALLOWONLY_EMAILS'));
+			foreach ($allowedSenders as $sender) {
+				$allowData .= "<li>".$sender . "</li>";
+			}
+			$allowData .= "</ul></p>";
+		} elseif (env::get('SMTP_FORCE_FROM')) {
+			$allowData = "<br/><br/><h3>Allowed sender domains/emails</h3><p>You cannot change the email sender since none of your domains are setup in our Email system.";
+			if (!env::get('SMTP_FORCE_FROM_NAME')) {
+				$allowData .= " You can still change the sender name though.";
+			}
+			$allowData .= "</ul></p>";
+		}
+
+		$settings['emailsettings'] = array(
+			'title' => __( 'Email Settings', 'cloudyne-extras'),
+			'description' => __( 'These settings determine from which domain the emails from this site will be sent.' . $allowData, 'cloudyne-extras'),
+			'fields' => array(
+				array(
+					'id' => 'disable_email_plugin',
+					'label' => __( 'Disable Emails', 'cloudyne-extras'),
+					'description' => __( 'Check this box to disable sending emails through our system. This means no emails can be sent unless you configure a plugin on your own.', 'cloudyne-extras'),
+					'type' => 'checkbox',
+					'default' => false,
+				),
+				array(
+					'id' => 'email_from',
+					'label' => __( 'Email Sender', 'cloudyne-extras'),
+					'description' => __( 'Enter the email address you want to send from', 'cloudyne-extras'),
+					'type' => 'text',
+					'default' => env::get('SMTP_FORCE_FROM') ?? env::get('SMTP_FROM') ?? '',
+					'disabled' => env::get('SMTP_FORCE_FROM') ? true : false,
+					'placeholder' => __( 'Email address', 'cloudyne-extras'),
+				),
+				array(
+					'id' => 'email_from_name',
+					'label' => __( 'Email From Name', 'cloudyne-extras'),
+					'description' => __( 'Enter the name you want to send from', 'cloudyne-extras'),
+					'type' => 'text',
+					'default' => env::get('SMTP_FORCE_FROM_NAME') ?? env::get('SMTP_FROM_NAME') ?? '',
+					'disabled' => env::get('SMTP_FORCE_FROM_NAME') ? true : false,
+					'placeholder' => __( 'Sender Name', 'cloudyne-extras'),
+				)
+			)
+		);
+
 		$settings['googlead'] = array(
-			'title'	   => __( 'Google Ad Manager', 'cloudyne-extras' ),
-			'description' => __( 'Settings for Google ad manager', 'cloudyne-extras' ),
+			'title'	   => __( 'Header Scripts', 'cloudyne-extras' ),
+			'description' => __( 'Add additional Javascript or stylesheet data to the header', 'cloudyne-extras' ),
 			'fields' => array(
 				array(
 					'id' => 'googlead_code',
-					'label' => __( 'Google Ad Manager Code', 'cloudyne-extras' ),
-					'description' => __( 'Enter your google ad manager code', 'cloudyne-extras' ),
+					'label' => __( 'Additional javascript/stylesheets', 'cloudyne-extras' ),
+					'description' => __( 'Insert additional code into the <head></head> tag of the site, normally google tag manager scripts, stylesheets or fonts', 'cloudyne-extras' ),
 					'type' => 'textarea',
 					'default' => '',
+					'cols' => '120',
+					'rows' => '15',
 					'placeholder' => __( '<!-- Google tag (gtag.js) -->'.PHP_EOL.'.........', 'cloudyne-extras' ),
 				)
 			)
 		);
+
+		
 
 
 		// $settings['standard'] = array(

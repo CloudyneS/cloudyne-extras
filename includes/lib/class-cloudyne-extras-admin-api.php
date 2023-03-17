@@ -46,6 +46,7 @@ class Cloudyne_Extras_Admin_API {
 
 		// Get saved data.
 		$data = '';
+		$disabled = '';
 		if ( $post ) {
 
 			// Get saved field data.
@@ -56,6 +57,9 @@ class Cloudyne_Extras_Admin_API {
 			if ( isset( $option ) ) {
 				$data = $option;
 			}
+		} elseif ( isset( $field['disabled'] ) && true === $field['disabled'] ) {
+			$disabled = ' disabled="disabled"';
+			$data = false;
 		} else {
 
 			// Get saved option.
@@ -82,7 +86,7 @@ class Cloudyne_Extras_Admin_API {
 			case 'text':
 			case 'url':
 			case 'email':
-				$html .= '<input id="' . esc_attr( $field['id'] ) . '" type="text" name="' . esc_attr( $option_name ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="' . esc_attr( $data ) . '" />' . "\n";
+				$html .= '<input id="' . esc_attr( $field['id'] ) . '" type="text" name="' . esc_attr( $option_name ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="' . esc_attr( $data ) . '" ' . $disabled . ' />' . "\n";
 				break;
 
 			case 'password':
@@ -105,7 +109,9 @@ class Cloudyne_Extras_Admin_API {
 				break;
 
 			case 'textarea':
-				$html .= '<textarea id="' . esc_attr( $field['id'] ) . '" rows="5" cols="50" name="' . esc_attr( $option_name ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '">' . $data . '</textarea><br/>' . "\n";
+				$rows = $field['rows'] ?? '5';
+				$cols = $field['cols'] ?? '50';
+				$html .= '<textarea id="' . esc_attr( $field['id'] ) . '" rows="'.$rows.'" cols="'.$cols.'" name="' . esc_attr( $option_name ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '">' . $data . '</textarea><br/>' . "\n";
 				break;
 
 			case 'checkbox':
