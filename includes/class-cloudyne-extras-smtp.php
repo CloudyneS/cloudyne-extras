@@ -47,7 +47,6 @@ class Cloudyne_Extras_Smtp {
         );
 
         if ($this->active) {
-            // add_filter('pre_wp_mail', 'smtp_mailer_pre_wp_mail', 10, 2);
             add_filter('pre_wp_mail', array($this, 'sendEmail'), 10, 2);
         }
     }
@@ -332,14 +331,11 @@ class Cloudyne_Extras_Smtp {
         $fromEmail = $this->getFirstNonemptyValue(
             $this->get_env('SMTP_FROM', null),
             $mailHeaders['from_email'] ?? null,
-            'noreply@' . $_SERVER['SERVER_NAME']
+            'noreply@' . "customer.v3.nu"
         );
         
         $mailer->setFrom($fromEmail, $fromName, true);
         
-        
- 
-
         // Add other reply-to addresses
         foreach ($mailArgs['reply_to'] as $replyTo) {
             list($email, $name) = $this->splitEmail($replyTo);

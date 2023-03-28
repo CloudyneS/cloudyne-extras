@@ -1,4 +1,9 @@
+default:
+  tags:
+    - kubernetes
+    - wordpress
+
 include:
- - project: 'cicd-templates/composer'
-   ref: main
-   file: 'deploy-composer.yaml'
+  - project: 'cicd-templates/composer'
+    ref: main
+    file: 'upload-repo.yaml'

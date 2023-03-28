@@ -244,6 +244,22 @@ class Cloudyne_Extras_Settings {
 				)
 			)
 		);
+		
+		$cUser = wp_get_current_user();
+
+		$settings['emailtest'] = array(
+			'title' => __( 'Email Test', 'cloudyne-extras'),
+			'description' => __( 'Send a test email', 'cloudyne-extras'),
+			'fields' => array(
+				array(
+					'id' => 'test_email_recipient',
+					'label' => __( 'Recipient', 'cloudyne-extras'),
+					'description' => __( 'Enter the email you want to send your test message to', 'cloudyne-extras'),
+					'type' => 'text',
+					'default' => $cUser->user_email
+				)
+			)
+		);
 
 		$settings['googlead'] = array(
 			'title'	   => __( 'Header Scripts', 'cloudyne-extras' ),
