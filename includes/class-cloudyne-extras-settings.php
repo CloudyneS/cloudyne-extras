@@ -84,8 +84,8 @@ class Cloudyne_Extras_Settings {
 
 		// Configure placement of plugin settings page. See readme for implementation.
 		add_filter( $this->base . 'menu_settings', array( $this, 'configure_settings' ) );
-	}
 
+	}
 
 	/**
 	 * Initialise settings
@@ -193,16 +193,35 @@ class Cloudyne_Extras_Settings {
 	 */
 	private function settings_fields() {
 		$allowData = "";
-
+		$emailmsg = "Email Sender";
+		$color = "";
+		
 		if ((env('SMTP_ALLOWONLY_DOMAINS') || env('SMTP_ALLOWONLY_EMAILS')) && !env('SMTP_FORCE_FROM')) {
-			$allowData = "<br/><br/><h3>Allowed sender domains/emails</h3><p>You can only configure emails to be sent from one of these domains or email addresses<ul>";
+			if (isset($_POST['cldy_email_from']) && $_POST['cldy_email_from'] !== 'noreply@customer.v3.nu') {
+				$email = $_POST['cldy_email_from'];
+				$domain = explode('@', $email)[1];
+				$allowedDomains = explode(",", env('SMTP_ALLOWONLY_DOMAINS'));
+				$allowedSenders = explode(",", env('SMTP_ALLOWONLY_EMAILS'));
+
+				if (!in_array($domain, $allowedDomains) && !in_array($email, $allowedSenders)) {
+					$_POST['cldy_email_from'] = 'invalid-domain-message@no-domain.com';
+				}
+			}
+			
+			if (get_option('cldy_email_from') === 'invalid-domain-message@no-domain.com') {
+				echo '<div class="error" style="color: red; font-weight: bold;">You cannot send emails from this domain. Please use one of the allowed domains or email addresses.</div>';
+				$emailmsg = "<style='color: red;'>Email Sender</style>";
+				$color = 'style="color: red;"';
+			}
+
+			$allowData = "<br/><br/><h3 $color>Allowed sender domains/emails</h3><p>You can only configure emails to be sent from one of these domains or email addresses<ul>";
 			$allowedDomains = explode(",", env('SMTP_ALLOWONLY_DOMAINS'));
 			foreach ($allowedDomains as $domain) {
-				$allowData .= "<li>".$domain . "</li>";
+				$allowData .= "<li $color>".$domain . "</li>";
 			}
 			$allowedSenders = explode(",", env('SMTP_ALLOWONLY_EMAILS'));
-			foreach ($allowedSenders as $sender) {
-				$allowData .= "<li>".$sender . "</li>";
+			foreach (array_merge(['noreply@customer.v3.nu'], $allowedSenders) as $sender) {
+				$allowData .= "<li $color>".$sender . "</li>";
 			}
 			$allowData .= "</ul></p>";
 		} elseif (env('SMTP_FORCE_FROM')) {
@@ -226,7 +245,7 @@ class Cloudyne_Extras_Settings {
 				),
 				array(
 					'id' => 'email_from',
-					'label' => __( 'Email Sender', 'cloudyne-extras'),
+					'label' => $emailmsg,
 					'description' => __( 'Enter the email address you want to send from', 'cloudyne-extras'),
 					'type' => 'text',
 					'default' => env('SMTP_FORCE_FROM') ?? env('SMTP_FROM') ?? '',
@@ -241,22 +260,6 @@ class Cloudyne_Extras_Settings {
 					'default' => env('SMTP_FORCE_FROM_NAME') ?? env('SMTP_FROM_NAME') ?? '',
 					'disabled' => env('SMTP_FORCE_FROM_NAME') ? true : false,
 					'placeholder' => __( 'Sender Name', 'cloudyne-extras'),
-				)
-			)
-		);
-		
-		$cUser = wp_get_current_user();
-
-		$settings['emailtest'] = array(
-			'title' => __( 'Email Test', 'cloudyne-extras'),
-			'description' => __( 'Send a test email', 'cloudyne-extras'),
-			'fields' => array(
-				array(
-					'id' => 'test_email_recipient',
-					'label' => __( 'Recipient', 'cloudyne-extras'),
-					'description' => __( 'Enter the email you want to send your test message to', 'cloudyne-extras'),
-					'type' => 'text',
-					'default' => $cUser->user_email
 				)
 			)
 		);
@@ -278,7 +281,6 @@ class Cloudyne_Extras_Settings {
 			)
 		);
 
-		
 
 
 		// $settings['standard'] = array(
@@ -411,6 +413,19 @@ class Cloudyne_Extras_Settings {
 		return $settings;
 	}
 
+	public function set_flashmessage($key, $value) {
+		$_SESSION[$key] = $value;
+	}
+
+	public function get_flashmessage($key, $default = False) {
+		if (isset($_SESSION[$key])) {
+			$value = $_SESSION[$key];
+			unset($_SESSION[$key]);
+			return $value;
+		}
+		return $default;
+	}
+
 	/**
 	 * Register plugin settings
 	 *
@@ -430,7 +445,6 @@ class Cloudyne_Extras_Settings {
 				}
 			}
 			//phpcs:enable
-
 			foreach ( $this->settings as $section => $data ) {
 
 				if ( $current_section && $current_section !== $section ) {

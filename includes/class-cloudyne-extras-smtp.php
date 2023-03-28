@@ -36,6 +36,8 @@ class Cloudyne_Extras_Smtp {
         'DEBUG_LOG_LOCATION' => ''
     );
 
+    public $senderlog = array();
+
 
     public function __construct() {
         if (get_option('cldy_disable_email_plugin', False)) {
@@ -49,13 +51,78 @@ class Cloudyne_Extras_Smtp {
         if ($this->active) {
             add_filter('pre_wp_mail', array($this, 'sendEmail'), 10, 2);
         }
+
+        add_action( 'admin_menu', array( $this, 'admin_menu' ) );
+
     }
+
+    public function admin_menu() {
+        $hook = add_management_page( 'Email Test', 'Email Tester', 'manage_options', 'cldy', array( $this, 'admin_page' ), '' );
+        add_action( "load-$hook", array( $this, 'admin_page_load' ) );
+
+		// add_management_page('Emailtest', 'Emailtest', '', 'test-some-email', array($this, 'testEmail'));
+    }
+
+    function admin_page_load() {
+        if (!isset($this->senderlog)) {
+            $this->senderlog = array();
+        }
+		if (isset($_POST['cldy_send_email_to'])) {
+            $this->senderlog[] = 'Starting to send test email';
+            if (isset($_POST['cldy_activate_debugging'])) {
+                $this->senderlog[] = 'Recipient: '.$_POST['cldy_send_email_to'];
+            }
+            wp_mail($_POST['cldy_send_email_to'], 'Test email', 'This is a test email from your wordpress site');
+            $this->senderlog[] = 'Finished sending test email';
+        }
+	}
+
+	function admin_page() {
+        $url = get_site_url(scheme: 'admin', path: 'wp-admin') . '/tools.php?page=cldy';
+        $usermail = wp_get_current_user();
+        $usermail = $usermail->user_email;
+        if (count($this->senderlog) > 0) {
+            echo '<h2>Log</h2>';
+            echo '<pre>';
+            foreach ($this->senderlog as $log) {
+                echo $log . PHP_EOL;
+            }
+            echo "</pre>";
+        }
+		echo <<<EOF
+                <h2>Test email settings</h2>
+                <form method="post" action="$url" enctype="multipart/form-data">
+                    <table class="form-table" role="presentation">
+                        <tbody>
+                            <tr>
+                                <th scope="row">Email Recipient</th><td><input id="cldy_send_email_to" type="text" name="cldy_send_email_to" placeholder="Email address" value="$usermail">
+                    <label for="email_from">
+                    <span class="description">Enter the email address you want to send the test email to</span>
+                    </label>
+                    </td></tr>
+                    <tr><td colspan="2"><input type="checkbox" name="cldy_activate_debugging"> Activate debugging</td></tr>
+                    </tbody></table><p class="submit">
+                    <input name="Submit" type="submit" class="button-primary" value="Save Settings">
+                    </p>
+                </form>
+        EOF;
+	}
 
     public function __debuglog($name, $item) {
         if ($this->get_env('DEBUG_LOG_LOCATION', '') !== '') {
             $data = json_encode([$name => $item], JSON_PRETTY_PRINT);
             file_put_contents($this->get_env('DEBUG_LOG_LOCATION', ''), $data, FILE_APPEND);
         }
+        if (count($this->senderlog) > 1) {
+            $this->senderlog[] = $name . ': ' . print_r($item, true);
+        }
+    }
+
+    public function getAllowedSenderName($requested) {
+        if ($this->settings['SMTP_FORCE_FROM_NAME']) {
+            return $this->settings['SMTP_FORCE_FROM_NAME'];
+        }
+        return $requested;
     }
 
     public function getAllowedSender($requested) {
@@ -73,12 +140,12 @@ class Cloudyne_Extras_Smtp {
         if ($this->settings['SMTP_ALLOWONLY_DOMAINS'] != '') {
             $domains = explode(',', $this->settings['SMTP_ALLOWONLY_DOMAINS']);
             $split = explode('@', $requested);
-            
-            if (in_array($split[1], $domains)) {
+
+            if (in_array($split[1], $domains) === true) {
                 return $requested;
             }
 
-            return $this->settings['SMTP_FROM'];
+            return "noreply@customer.v3.nu";
         }
 
         if ($this->settings['SMTP_ALLOWONLY_EMAILS'] != '') {
@@ -316,26 +383,36 @@ class Cloudyne_Extras_Smtp {
         $mailer = new PHPMailer(true);
         $mailer->isSMTP();
 
+        $this->__debuglog('Mailer initialized: ', $atts);
+
         // Get settings for email
         // Primary: From env
         // Secondary: From mail headers
         // Tertiary: Defaults
         
         // Set sender name and email
-        $fromName = $this->getFirstNonemptyValue(
-            $this->get_env('SMTP_FROM_NAME', null),
-            $mailHeaders['from_name'] ?? null,
-            'WordPress'
-        );
-
         $fromEmail = $this->getFirstNonemptyValue(
-            $this->get_env('SMTP_FROM', null),
+            get_option('cldy_email_from', null),
             $mailHeaders['from_email'] ?? null,
             'noreply@' . "customer.v3.nu"
         );
-        
+
+
+        $fromName = $this->getFirstNonemptyValue(
+            get_option('cldy_email_from_name', False),
+            $mailHeaders['from_name'] ?? null,
+            'WordPress Customer'
+        );
+
+        // Double-check the email is allowed
+        $fromEmail = $this->getAllowedSender($fromEmail);
+        $fromName = $this->getAllowedSenderName($fromName);
+
+        $this->__debuglog('Sending email from ', [$fromName, $fromEmail]);
+
         $mailer->setFrom($fromEmail, $fromName, true);
-        
+        $mailer->Sender = $fromEmail;
+
         // Add other reply-to addresses
         foreach ($mailArgs['reply_to'] as $replyTo) {
             list($email, $name) = $this->splitEmail($replyTo);
@@ -347,7 +424,7 @@ class Cloudyne_Extras_Smtp {
             list($email, $name) = $this->splitEmail($to);
             $mailer->addAddress($email, $name);
         }
-
+      
         foreach ($mailArgs['cc'] as $cc) {
             list($email, $name) = $this->splitEmail($cc);
             $mailer->addCC($email, $name);
@@ -369,7 +446,6 @@ class Cloudyne_Extras_Smtp {
         $mailer->Password = $this->get_env('SMTP_PASS', null);
         $mailer->SMTPSecure = $this->get_env('SMTP_SMTPSECURE', null);
         $mailer->SMTPAutoTLS = $this->get_env('SMTP_SMTPAUTOTLS', true);
-        
         $mailer->SMTPOptions = array(
             'ssl' => array(
                 'verify_peer' => false,
@@ -437,12 +513,16 @@ class Cloudyne_Extras_Smtp {
             $mail_data['attachments'] = $mailArgs['attachments'];
         }
 
+
         try {
             $send = $mailer->send();
+            $this->__debuglog('Successfully sent email!', [$send, $mail_data]);
             do_action( 'wp_mail_succeeded', $mail_data );
             return $send;
         } catch ( \PHPMailer\PHPMailer\Exception $e ) {
             $mail_data['phpmailer_exception_code'] = $e->getCode();
+            $mail_data['phpmailer_exception'] = $e->getMessage();
+            $this->__debuglog('Failed sending email...', $mail_data);
             do_action( 'wp_mail_failed', new WP_Error( 'wp_mail_failed', $e->getMessage(), $mail_data ) );
             return false;
     }
