@@ -197,7 +197,7 @@ class Cloudyne_Extras_Settings {
 		$color = "";
 		
 		if ((env('SMTP_ALLOWONLY_DOMAINS') || env('SMTP_ALLOWONLY_EMAILS')) && !env('SMTP_FORCE_FROM')) {
-			if (isset($_POST['cldy_email_from']) && $_POST['cldy_email_from'] !== 'noreply@customer.v3.nu') {
+			if (isset($_POST['cldy_email_from']) && $_POST['cldy_email_from'] !== 'customer-noreply@v3.nu') {
 				$email = $_POST['cldy_email_from'];
 				$domain = explode('@', $email)[1];
 				$allowedDomains = explode(",", env('SMTP_ALLOWONLY_DOMAINS'));
@@ -220,7 +220,7 @@ class Cloudyne_Extras_Settings {
 				$allowData .= "<li $color>".$domain . "</li>";
 			}
 			$allowedSenders = explode(",", env('SMTP_ALLOWONLY_EMAILS'));
-			foreach (array_merge(['noreply@customer.v3.nu'], $allowedSenders) as $sender) {
+			foreach (array_merge(['customer-noreply@v3.nu'], $allowedSenders) as $sender) {
 				$allowData .= "<li $color>".$sender . "</li>";
 			}
 			$allowData .= "</ul></p>";
