@@ -145,7 +145,7 @@ class Cloudyne_Extras_Smtp {
                 return $requested;
             }
 
-            return "noreply@customer.v3.nu";
+            return "customer-noreply@v3.nu";
         }
 
         if ($this->settings['SMTP_ALLOWONLY_EMAILS'] != '') {
@@ -394,7 +394,7 @@ class Cloudyne_Extras_Smtp {
         $fromEmail = $this->getFirstNonemptyValue(
             get_option('cldy_email_from', null),
             $mailHeaders['from_email'] ?? null,
-            'noreply@' . "customer.v3.nu"
+            'customer-noreply@' . "v3.nu"
         );
 
 
