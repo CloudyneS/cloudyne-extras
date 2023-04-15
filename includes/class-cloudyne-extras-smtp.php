@@ -78,7 +78,7 @@ class Cloudyne_Extras_Smtp {
 	}
 
 	function admin_page() {
-        $url = get_site_url(scheme: 'admin', path: 'wp-admin') . '/tools.php?page=cldy';
+        $url = get_site_url(null, 'wp-admin', 'admin');
         $usermail = wp_get_current_user();
         $usermail = $usermail->user_email;
         if (count($this->senderlog) > 0) {
