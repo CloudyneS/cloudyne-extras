@@ -337,6 +337,9 @@ class Cloudyne_Extras_Smtp {
             if ( ! is_array( $atts['attachments'] ) ) {
                     $mailArgs['attachments'] = explode( "\n", str_replace( "\r\n", "\n", $atts['attachments'] ) );
             }
+            else {
+                $mailArgs['attachments'] = $atts['attachments'];
+            }
         }
 
         return $mailArgs;
