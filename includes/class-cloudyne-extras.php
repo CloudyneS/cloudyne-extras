@@ -18,17 +18,31 @@ class Cloudyne_Hooks {
 	{
 		$this->settings = $settings;
 
-		// Add action for Google Tag Manager
+		// Add action for header
 		add_action('wp_head', array($this, 'tagManagerHook'));
+
+		// Add action for body open
+		add_action('wp_body_open', array($this, 'bodyOpenHook'));
+
+		// Add action for footer inline scripts
+		add_action('wp_footer', array($this, 'footerScriptInline'));
 	}
 
 	public function tagManagerHook()
 	{
-		if (get_option($this->settings->base . 'googlead_code', '') != '') {
-			$googlead_code = get_option($this->settings->base . 'googlead_code', '');
-			echo $googlead_code;
-		}
+		echo get_option($this->settings->base . 'googlead_code', '') ?? '';
 	}
+
+	public function bodyOpenHook()
+	{
+		echo get_option($this->settings->base . 'body_top_code', '') ?? '';
+	}
+
+	public function footerScriptInline()
+	{
+		echo get_option($this->settings->base . 'footer_script_code', '') ?? '';
+	}
+
 }
 
 /**

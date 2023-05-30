@@ -277,6 +277,26 @@ class Cloudyne_Extras_Settings {
 					'cols' => '120',
 					'rows' => '15',
 					'placeholder' => __( '<!-- Google tag (gtag.js) -->'.PHP_EOL.'.........', 'cloudyne-extras' ),
+				),
+				array(
+					'id' => 'body_top_code',
+					'label' => __('Additional body elements (top)', 'cloudyne-extras'),
+					'description' => __( 'Additional code inserted at the top of the body (e.g. GTM iFrame fallback)', 'cloudyne-extras' ),
+					'type' => 'textarea',
+					'default' => '',
+					'cols' => '120',
+					'rows' => '15',
+					'placeholder' => __( '<!-- Google Tag Manager (noscript) -->'.PHP_EOL.'<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-xxxxxxx&gtm_auth=xxxxxxxxxxxx&gtm_preview=xxxx&gtm_cookies_win=x" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>'.PHP_EOL.'<!-- End Google Tag Manager (noscript) -->' , 'cloudyne-extras' )
+				),
+				array(
+					'id' => 'footer_script_code',
+					'label' => __('Additional footer javascript', 'cloudyne-extras'),
+					'description' => __( 'Inserts additional inline scripts in the lower section of the body', 'cloudyne-extras' ),
+					'type' => 'textarea',
+					'default' => '',
+					'cols' => '120',
+					'rows' => '15',
+					'placeholder' => __( '<script type="text/javascript">jQuery(document).ready(function() { console.log("hello world") })</script>' , 'cloudyne-extras' )
 				)
 			)
 		);
