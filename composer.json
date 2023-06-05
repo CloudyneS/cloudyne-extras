@@ -1,7 +1,7 @@
 {
 	"name": "cloudyne/cloudyne-extras",
 	"type": "wordpress-muplugin",
-	"version": "dev-main",
+	"version": "1.1.4",
 	"license": "GPL-2.0-or-later",
 	"description": "A wordpress plugin for functionality relating to Cloudyne hosting",
 	"keywords": [
