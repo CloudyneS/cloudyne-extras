@@ -1,20 +1,22 @@
 {
 	"name": "cloudyne/cloudyne-extras",
 	"type": "wordpress-muplugin",
-	"version": "1.1.6",
+	"version": "1.1.7",
 	"license": "GPL-2.0-or-later",
-	"description": "A wordpress plugin for functionality relating to Cloudyne hosting",
+	"description": "A wordpress plugin with miscellaneous additional functionality",
 	"keywords": [
 		"wordpress", "cloudyne", "extras", "cloudyne-hosting"
 	],
 	"support": {
-		"issues": "https://support.cloudyne.se"
+		"issues": "https://github.com/cloudynes/cloudyne-extras/issues",
+		"source": "https://github.com/cloudynes/cloudyne-extras"
 	},
 	"require": {
-		"php": ">=7.4",
+		"php": ">=8.0",
 		"squizlabs/php_codesniffer": "^3.3.1",
 		"oscarotero/env": "^2.1",
-		"phpmailer/phpmailer": "^6.8"
+		"phpmailer/phpmailer": "^6.8",
+		"enshrined/svg-sanitize": "^0.16"
     },
 	"require-dev": {
         "wp-coding-standards/wpcs": "2.1.*"

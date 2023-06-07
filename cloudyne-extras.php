@@ -24,6 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Load plugin class files.
 require_once 'includes/class-cloudyne-extras.php';
 require_once 'includes/class-cloudyne-extras-smtp.php';
+require_once 'includes/class-cloudyne-extras-media.php';
 require_once 'includes/class-cloudyne-extras-settings.php';
 
 // Load plugin libraries.
@@ -50,3 +51,33 @@ function cloudyne_extras() {
 }
 
 cloudyne_extras();
+
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	class cli_images_to_webp extends WP_CLI_Command
+	{
+		function convert( $args, $assoc_args ) {
+			$cldy_media = new Cloudyne_Extras_Media();
+
+			// Arg: --force-all: Convert all images, even if they already have a webp version
+			// Arg: --folder=<folder>: Convert all images in a folder relative to wp-content (vanilla) / app (bedrock)
+
+			$only_missing = 1;
+			if (isset($assoc_args['force-all']) && $assoc_args['force-all']) {
+				$only_missing = 0;
+			}
+			
+			$folder = 'uploads';
+			if (isset($assoc_args['folder'])) {
+				$folder = $assoc_args['folder'];
+			}
+			$dirList = $cldy_media->recursiveDirectoryList($folder);
+			foreach ($dirList as $dir) {
+				echo "Converting images in $dir ...  ";
+				$cldy_media->convertMediaLibrary($only_missing, $dir);
+			}
+			echo "Finished";
+		}
+	}
+
+	WP_CLI::add_command( 'cloudyne-webp', 'cli_images_to_webp' );
+}

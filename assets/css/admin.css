@@ -1,1 +1,5 @@
 /* phpcs:ignore */
+.convert-missing-images, .convert-all-images {
+    margin-left: 5px !important;
+    margin-right: 5px !important;
+}

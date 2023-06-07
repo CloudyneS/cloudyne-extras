@@ -196,7 +196,20 @@ class Cloudyne_Extras_Admin_API {
 					)
 				);
 				break;
-
+			
+			case 'jstree':
+				echo get_option( 'cldy_webp_delete_originals', false ) ? '<div class="below-h2 error"><p>THIS OPTION WILL PERMANENTLY DELETE ORIGINAL IMAGES, USE WITH CAUTION</p></div>': '';
+				echo '<div id="transparency_status_message" class="below-h2 error" style="display:none"><p><span></span></p></div>';
+				echo '<div id="hide-on-convert">';
+				echo wp_nonce_field('cywebp-convert', '_sec_wpnonce');
+				echo "<h3>" . __( 'Select the folders you want to scan for images and convert them to WebP:', 'cloudyne-extras' ) . "</h3>";
+				echo '<div id="jstree"></div> <br>';
+				echo '<button type="button" class="button button-primary convert-missing-images">'. __('Convert missing images in selected folders', 'cloudyne-extras') .'</button>';
+				echo '<button type="button" class="button button-primary convert-all-images">'. __('Convert all images in selected folders', 'cloudyne-extras') .'</button>';
+				echo '</div>';
+				echo '<div id="notice-save-first" style="display: none; color: darkred;"><p>Save changes before starting conversion</p></div>';
+				echo '<div id="show-on-convert"></div>';
+				break;
 		}
 
 		switch ( $field['type'] ) {

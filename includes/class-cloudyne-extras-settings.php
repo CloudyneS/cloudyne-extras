@@ -264,6 +264,63 @@ class Cloudyne_Extras_Settings {
 			)
 		);
 
+		$settings['media'] = array(
+			'title'	   => __( 'Media Settings', 'cloudyne-extras' ),
+			'description' => __( 'Settings for media like SVG and WebP support/conversion', 'cloudyne-extras' ),
+			'fields' => array(
+				array(
+					'id' => 'enable_svg',
+					'label' => __( 'Enable SVG Support', 'cloudyne-extras' ),
+					'description' => __( 'Enable support for the SVG extension', 'cloudyne-extras' ),
+					'type' => 'checkbox',
+					'default' => true
+				),
+				array(
+					'id' => 'enable_webp',
+					'label' => __( 'Enable WebP Conversion', 'cloudyne-extras' ),
+					'description' => __( 'Enable conversion of images to WebP format on upload', 'cloudyne-extras' ),
+					'type' => 'checkbox',
+					'default' => false
+				),
+				array(
+					'id' => 'webp_quality',
+					'label' => __( 'Image Quality', 'cloudyne-extras' ),
+					'description' => __( 'The converted quality of the webp images (0-100)', 'cloudyne-extras' ),
+					'type' => 'number',
+					'min' => 0,
+					'max' => 100,
+					'default' => 80
+				),
+				array(
+					'id' => 'convert_with_imagick',
+					'label' => __( 'Convert images with imagick', 'cloudyne-extras' ),
+					'description' => __( 'Try to use imagick as the converter. If disabled, PHP-GD will be used', 'cloudyne-extras' ),
+					'type' => 'checkbox',
+					'default' => false
+				),
+				array(
+					'id' => 'webp_delete_originals',
+					'label' => __( 'Delete original files after conversion (CAUTION)', 'cloudyne-extras' ),
+					'description' => __( 'This will automatically remove original files after conversion. THIS WILL PERMANENTLY ERASE THOSE IMAGES, EVEN IN THE EVENT OF FAILURE.', 'cloudyne-extras' ),
+					'type' => 'checkbox',
+					'default' => false
+				),
+				array(
+					'id' => 'webp_extensions',
+					'label' => __( 'WebP Extensions', 'cloudyne-extras' ),
+					'description' => __( 'Enter the extensions of the images you want to convert to WebP format, one per line without the dot', 'cloudyne-extras' ),
+					'type' => 'textarea',
+					'default' => 'jpg'.PHP_EOL.'jpeg'.PHP_EOL.'png'.PHP_EOL.'gif'
+				),
+				array(
+					'id' => 'jstree',
+					'label' => 'Convert',
+					'description' => 'Click the buttons above to manually convert existing images to webp.',
+					'type' => 'jstree',
+					'default' => ''
+				)
+			)
+		);
 		$settings['googlead'] = array(
 			'title'	   => __( 'Header Scripts', 'cloudyne-extras' ),
 			'description' => __( 'Add additional Javascript or stylesheet data to the header', 'cloudyne-extras' ),

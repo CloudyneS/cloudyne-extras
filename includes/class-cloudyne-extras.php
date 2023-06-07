@@ -11,8 +11,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+
 class Cloudyne_Hooks {
 	public $settings;
+	public $media;
 
 	public function __construct($settings)
 	{
@@ -26,6 +28,9 @@ class Cloudyne_Hooks {
 
 		// Add action for footer inline scripts
 		add_action('wp_footer', array($this, 'footerScriptInline'));
+
+		// Load hooks from media plugin
+		$this->media = new Cloudyne_Extras_Media($this->settings);
 	}
 
 	public function tagManagerHook()
@@ -137,8 +142,10 @@ class Cloudyne_Extras {
 	 * @since   1.0.0
 	 */
 	public $script_suffix;
-
 	public $hooks;
+	
+	public $svg_sanitizer;
+
 
 	/**
 	 * Constructor funtion.
@@ -173,7 +180,7 @@ class Cloudyne_Extras {
 			$this->admin = new Cloudyne_Extras_Admin_API();
 		}
 
-		// Load SMTP plugin
+// Load SMTP plugin
 		$smtp = new Cloudyne_Extras_SMTP();
 
 		// Handle localisation.
